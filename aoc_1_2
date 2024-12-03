@@ -1,0 +1,69 @@
+# Elixir
+
+# read a list of numbers from "input.txt"
+# the file contains two numbers per line
+# separated by tree spaces
+
+lines =
+  "input.txt"
+  |> File.read!()
+  |> String.split("\n")
+
+#IO.inspect(lines) # -> ["97924   12015", "50267   32019", "98415   10716", ... ]
+
+# extract the first number from each line
+# convert it to an integer
+
+numbers1 =
+  lines
+  |> Enum.map(fn line ->
+    [a, _] = String.split(line, "   ")
+    String.to_integer(a)
+  end)
+
+numbers2 =
+  lines
+  |> Enum.map(fn line ->
+    [_ , b] = String.split(line, "   ")
+    String.to_integer(b)
+  end)
+
+numbers1 = Enum.sort(numbers1)
+numbers2 = Enum.sort(numbers2)
+
+# create a lookup table for the second list
+# to find the number of occurrences of each number
+
+lookup_table =
+  numbers2
+  |> Enum.frequencies()
+
+IO.inspect(lookup_table) # -> %{12015 => 1, 32019 => 1, 10716 => 1, ... }
+
+# for each number "a" in the first list,
+# get the number of occurrences ("n") in the second list
+# Create a third list with the product of "a" and "n"
+
+numbers3 =
+  numbers1
+  |> Enum.map(fn a ->
+    n = Map.get(lookup_table, a, 0)
+    a * n
+  end)
+
+IO.inspect(numbers3)
+
+
+# filter out non-null numbers from numbers3
+numbers3 =
+  Enum.filter(numbers3, &(&1 != 0))
+
+IO.inspect(numbers3)
+
+# sum the numbers in the third list
+
+result =
+  numbers3
+  |> Enum.sum()
+
+IO.inspect(result)

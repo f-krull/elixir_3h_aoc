@@ -1,0 +1,61 @@
+# Elixir
+
+# read a list of numbers from "input.txt"
+# the file contains two numbers per line
+# separated by tree spaces
+
+lines =
+  "input.txt"
+  |> File.read!()
+  |> String.split("\n")
+
+#IO.inspect(lines) # -> ["97924   12015", "50267   32019", "98415   10716", ... ]
+
+# extract the first number from each line
+# convert it to an integer
+
+numbers1 =
+  lines
+  |> Enum.map(fn line ->
+    [a, _] = String.split(line, "   ")
+    String.to_integer(a)
+  end)
+
+numbers2 =
+  lines
+  |> Enum.map(fn line ->
+    [_ , b] = String.split(line, "   ")
+    String.to_integer(b)
+  end)
+
+numbers1 = Enum.sort(numbers1)
+numbers2 = Enum.sort(numbers2)
+
+IO.puts("sorted numbers")
+IO.inspect(numbers1) # -> [50267, 97924, 98415, ... ]
+
+# calculate the pairwide differences
+# and find the minimum difference
+
+differences =
+  Enum.map(0..(length(numbers1) - 1), fn i ->
+    abs(Enum.at(numbers1, i) - Enum.at(numbers2, i))
+  end)
+
+IO.puts("differences")
+IO.inspect(differences) # -> [47909, 18248, 12399, ... ]
+
+# sum differences
+
+sum_of_differences = Enum.sum(differences)
+
+IO.puts("sum of differences")
+IO.inspect(sum_of_differences)
+
+# write the sum of differences to "output.txt"
+
+File.write("output.txt", Integer.to_string(sum_of_differences))
+
+# exit with status 0
+
+System.halt(0)

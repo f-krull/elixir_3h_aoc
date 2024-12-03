@@ -1,0 +1,72 @@
+# Elixir
+
+# read a list of numbers from "input.txt"
+# the file contains n numbers per line
+# separated by a space
+
+lines =
+  "input2.txt"
+  |> File.read!()
+  |> String.split("\n")
+
+# Helper function to convert a list of strings to a list of integers
+convert_to_integers = fn line ->
+  line
+  |> String.split()
+end
+
+numbersStr =
+  lines
+  |> Enum.map(convert_to_integers)
+
+# numbersStr looks like this:
+# [
+#  ["90", "91", "93", "96", "93"],
+#  ["3", "5", "7", "10", "11", "11"],
+#  ["35", "37", "39", "42", "46"],
+#  ["67", "70", "72", "74", "79"],
+#  ...
+# ]
+
+# now convert to integers
+numbers =
+  numbersStr
+  |> Enum.map(fn line ->
+    line
+    |> Enum.map(&String.to_integer/1)
+  end)
+
+# a helpers function to check a list of intergers [3,5,3,7,6]
+
+# check if the numbers are increasing
+is_increasing = fn numbers ->
+  Enum.chunk_every(numbers, 2, 1, :discard)
+  |> Enum.all?(fn [a, b] -> a < b end)
+end
+# check if the numbers are decreasing
+is_decreasing = fn numbers ->
+  Enum.chunk_every(numbers, 2, 1, :discard)
+  |> Enum.all?(fn [a, b] -> a > b end)
+end
+# check if the pairwise differ by at least 1
+is_pairwise_diff_at_least_1 = fn numbers ->
+  Enum.chunk_every(numbers, 2, 1, :discard)
+  |> Enum.all?(fn [a, b] -> abs(a - b) >= 1 end)
+end
+is_pairwise_diff_at_most_3 = fn numbers ->
+  Enum.chunk_every(numbers, 2, 1, :discard)
+  |> Enum.all?(fn [a, b] -> abs(a - b) <= 3 end)
+end
+
+# filter elements that are increasing or decreasing
+result =
+  numbers
+  |> Enum.filter(fn numbers ->
+    (is_increasing.(numbers) or is_decreasing.(numbers))
+    and is_pairwise_diff_at_least_1.(numbers) and
+    is_pairwise_diff_at_most_3.(numbers)
+  end)
+
+# print the number of elements in the result
+IO.puts(length(numbers))
+IO.puts(length(result))
